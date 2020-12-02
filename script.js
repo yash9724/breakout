@@ -126,7 +126,7 @@ function collisionDetection(){
             if(bricks[c][r].status && x + radius > bricks[c][r].x && 
                x < (bricks[c][r].x + brickWidth + radius) && y + radius > bricks[c][r].y && 
                (y < bricks[c][r].y + brickHeight + radius)){
-                console.log("Inside");
+        
                 bricks[c][r].status = false;
                 dy = -dy;
                 score++;
@@ -199,27 +199,35 @@ function draw(){
     drawLevel();
     collisionDetection();
     
-    if(x + radius >= canvas.width || x - radius <= 0)
+    if(x + radius >= canvas.width || x - radius <= 0){
         dx = -dx;
-    if( y + radius >= canvas.height || y - radius <= 0)
-        dy = -dy;
-    else if(y + radius + paddleHeight > canvas.height){
-        if(x + radius > paddleX && x - radius < paddleX + paddleWidth){
-            dy = -dy;  
-        }else{
-            lives--;
-            if(lives){
-                x = canvas.width/2;
-                y = canvas.height-30;
-                paddleX = (canvas.width-paddleWidth)/2;
-            }else{
-                // alert("GAME OVER");
-                // document.location.reload();
-            }
-
-        }
-    
     }
+    else if(y - radius <= 0){
+        dy = -dy;
+    }
+    else if((x + radius >= paddleX) &&
+            (x + radius <= paddleX + paddleWidth) &&
+            (y + radius + paddleHeight >= canvas.height)){
+        
+        dy = -dy;
+    }
+    else if(y + radius >= canvas.height){
+        lives--;
+        if(lives){
+            x = canvas.width/2;
+            y = canvas.height-30;
+            paddleX = (canvas.width-paddleWidth)/2;
+            paused = true;
+            setTimeout(function(){
+                paused = false;
+                draw();
+            }, 500);
+        }else{
+            alert("GAME OVER");
+            document.location.reload();
+        }
+    }
+    
     
     
     if(rightPressed && paddleX < canvas.width-paddleWidth){
